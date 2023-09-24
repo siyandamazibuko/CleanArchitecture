@@ -1,2 +1,2 @@
 # CleanArchitecture
-A simple CRUD application implemeting clean archicture
+A simple CRUD application implemeting clean architecture
