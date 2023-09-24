@@ -21,7 +21,6 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using CleanArchitecture.Api.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using System.Net.Mime;
 
@@ -106,13 +105,6 @@ namespace CleanArchitecture.Api.Extensions
                         .Bind(ApiConfiguration.Swagger, options);
                 });
 
-            // services
-            //     .AddCustomSwaggerGen(environment, options =>
-            //     {
-            //         configuration
-            //             .Bind(ApiConfiguration.Swagger, options);
-            //     });
-
             return services;
         }
 
@@ -135,15 +127,6 @@ namespace CleanArchitecture.Api.Extensions
                         };
                     };
                 });
-
-            return services;
-        }
-
-        public static IServiceCollection AddCustomHealthChecks(this IServiceCollection services)
-        {
-            services.AddHealthChecks().AddCheck<SQSConsumerHealthCheck>("SQSConsumerHealthCheck", HealthStatus.Unhealthy);
-
-            // NOTE: More health checks can be added here
 
             return services;
         }
