@@ -1,14 +1,12 @@
-﻿using Cib.Markets.Core.Correlation.AspNetCore;
-using CleanArchitecture.Infrastructure;
+﻿using CleanArchitecture.Infrastructure;
 using CleanArchitecture.Api.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FeatureManagement;
 using Serilog;
-using CleanArchitecture.Api.Filters;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 namespace CleanArchitecture.Api
 {
@@ -28,8 +26,6 @@ namespace CleanArchitecture.Api
             services.AddSingleton(Log.Logger);
             services.AddHttpContextAccessor();
             services.AddCustomCors().AddCustomMvc().AddCustomApiFeatures().AddCustomConfiguration()
-                .AddCustomHealthChecks()
-                .AddCorrelationId()
                 .AddFeatureManagement();
 
             services.AddIntegrations(_configuration);
@@ -42,8 +38,6 @@ namespace CleanArchitecture.Api
         {
             app
                 .UseHttpsRedirection()
-                .UseCorrelationId()
-                .UseSerilogRequestLogging()
                 .UseStaticFiles()
                 .ConfigureCors()
                 .ConfigureSwagger(provider)
