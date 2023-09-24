@@ -8,7 +8,6 @@ using CleanArchitecture.Messages.Queries.Users;
 using CleanArchitecture.Messages.Responses.Users;
 using CleanArchitecture.Models.Users;
 using MediatR;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace CleanArchitecture.Application.Handlers.Users
 {
