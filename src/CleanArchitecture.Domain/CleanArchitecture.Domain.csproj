@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.15" />
+    <PackageReference Include="Destructurama.Attributed" Version="3.0.0" />
+    <PackageReference Include="Destructurama.JsonNet" Version="2.0.0" />
+    <PackageReference Include="WorkflowCore" Version="3.6.5" />
+    <PackageReference Include="WorkflowCore.Persistence.PostgreSQL" Version="3.6.5" />
+    <PackageReference Include="WorkflowCore.Providers.Redis" Version="3.6.3" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\CleanArchitecture.Common\CleanArchitecture.Common.csproj" />
+  </ItemGroup>
+</Project>

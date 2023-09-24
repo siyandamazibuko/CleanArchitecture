@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Refit.HttpClientFactory" Version="6.0.38" />
+    <PackageReference Include="Refit.Newtonsoft.Json" Version="6.0.38" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CleanArchitecture.Messages\CleanArchitecture.Messages.csproj" />
+  </ItemGroup>
+
+</Project>

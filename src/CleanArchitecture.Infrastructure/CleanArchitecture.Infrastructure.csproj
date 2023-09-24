@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="5.0.1" />
+    <PackageReference Include="Hangfire" Version="1.7.28" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.28" />
+    <PackageReference Include="Hangfire.PostgreSql" Version="1.8.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="6.0.0" />
+    <PackageReference Include="Microsoft.FeatureManagement" Version="2.4.0" />
+    <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" Version="2.4.0" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
+    <PackageReference Include="SimpleInjector.Integration.GenericHost" Version="4.10.3" />
+    <PackageReference Include="WorkflowCore.Providers.Redis" Version="3.6.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CleanArchitecture.Application\CleanArchitecture.Application.csproj" />
+    <ProjectReference Include="..\CleanArchitecture.Common\CleanArchitecture.Common.csproj" />
+    <ProjectReference Include="..\CleanArchitecture.Domain\CleanArchitecture.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Testing\ObjectMothers\" />
+  </ItemGroup>
+
+</Project>
