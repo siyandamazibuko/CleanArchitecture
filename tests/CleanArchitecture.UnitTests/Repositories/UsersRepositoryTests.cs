@@ -6,6 +6,11 @@ using SimpleInjector.Lifestyles;
 using SimpleInjector;
 using CleanArchitecture.Infrastructure.Testing;
 using CleanArchitecture.Domain.Repositories;
+using MediatR;
+using StackExchange.Redis;
+using System.Threading.Tasks;
+using System.Linq;
+using System;
 
 namespace CleanArchitecture.UnitTests.Repositories
 {
@@ -36,8 +41,7 @@ namespace CleanArchitecture.UnitTests.Repositories
                 .BuildServiceProvider(validateScopes: true)
                 .UseSimpleInjector(_container);
 
-            //_container.Register(() => new ServiceFactory(_container.GetInstance), Lifestyle.Singleton);
-
+            _container.Register(() => new ServiceFactory(_container.GetInstance), Lifestyle.Singleton);
             _container.Verify();
         }
 
@@ -51,13 +55,58 @@ namespace CleanArchitecture.UnitTests.Repositories
         public void TestInitialize()
         {
             _containerScope = AsyncScopedLifestyle.BeginScope(_container);
-            //_usersRepository = _container.GetService<IUsersRepository>();
+            _usersRepository = _container.GetService<IUsersRepository>();
         }
 
         [TestCleanup]
         public void TestCleanup()
         {
             _containerScope.Dispose();
+        }
+
+        [TestMethod]
+        public async Task GetUsers_Success()
+        {
+            var userId = await _usersRepository.CreateUser(new Domain.Entities.User
+            {
+                Id = Guid.NewGuid()
+            });
+            var response = await _usersRepository.GetUsers();
+
+            Assert.IsTrue(response?.Any());
+        }
+
+        [TestMethod]
+        public async Task GetUsers_Fail()
+        {
+            var response = await _usersRepository.GetUsers();
+
+            Assert.IsTrue(response?.Any());
+        }
+
+        [TestMethod]
+        public async Task CreateUser_Success()
+        {
+            var userId = await _usersRepository.CreateUser(new Domain.Entities.User
+            {
+                Id = Guid.NewGuid(),
+                Name = "Test",
+                Surname = "Test",
+                DateOfBirth = DateTime.UtcNow
+            });
+
+            Assert.AreNotEqual(userId, Guid.Empty);
+        }
+
+        [TestMethod]
+        public async Task CreateUser_Fail()
+        {
+            var userId = await _usersRepository.CreateUser(new Domain.Entities.User
+            {
+                Id = Guid.NewGuid(),
+                Name = "Test",
+                Surname = "Test",
+            });
         }
     }
 }

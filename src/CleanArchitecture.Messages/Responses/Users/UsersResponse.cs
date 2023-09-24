@@ -5,6 +5,6 @@ namespace CleanArchitecture.Messages.Responses.Users
 {
     public class UsersResponse
     {
-        public IList<UserInformation> Users { get; set; }
+        public IList<User> Users { get; set; }
     }
 }

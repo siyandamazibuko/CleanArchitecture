@@ -10,10 +10,6 @@ namespace CleanArchitecture.Application.Mappings
             CreateMap<Models.Users.User, Entities.User>()
                 .ForMember(dst => dst.Id, opt => opt.Ignore())
                 .ReverseMap();
-
-            CreateMap<Models.Users.UserInformation, Entities.User>()
-                .ForMember(dst => dst.DateOfBirth, opt => opt.Ignore())
-                .ReverseMap();
         }
     }
 }

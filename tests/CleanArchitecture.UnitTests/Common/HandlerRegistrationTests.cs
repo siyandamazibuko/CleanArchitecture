@@ -13,7 +13,7 @@ namespace CleanArchitecture.UnitTests.Common
     public class HandlerRegistrationTests
     {
         [TestMethod]
-        public void Check_HandlersForRequests_ShouldAlwaysPass()
+        public void Check_Handlers_ShouldAlwaysPass()
         {
             var requestTypes = typeof(GetUsersQuery).Assembly.GetTypes()
                 .Where(IsRequest)

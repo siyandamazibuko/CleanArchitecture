@@ -14,7 +14,7 @@ namespace CleanArchitecture.UnitTests.Common
     public class ValidatorRegistrationTests
     {
         [TestMethod]
-        public void Check_ValidatorsForRequests_ShouldAlwaysPass()
+        public void Check_Validators_ShouldAlwaysPass()
         {
             var requestTypes = typeof(GetUsersQuery).Assembly.GetTypes()
                 .Where(IsRequest)

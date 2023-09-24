@@ -44,9 +44,8 @@ stages:
     workspace:
       clean: all
       
-    steps:       
-    
-   - task: gitversion/setup@0
+    steps:        
+    - task: gitversion/setup@0
       displayName: Install GitVersion
       inputs:
         versionSpec: '5.x'
