@@ -1,61 +1,34 @@
 trigger:
-  branches:
-    include:
-    - develop
-    - master
-    - feature/*
-    - refs/tags/*
+ - master
+ - dev 
+ - features/*
+ - refs/tags/*
 
 name: 0.0.$(Rev:r)
 
-# The pipeline uses the enablement step templates to build and deploy the docker image and helmchart.
-# Refer to: https://dev.azure.com/absarails/CIB-Digital%20Infrastructure/_git/pipeline-templates?path=%2FREADME.md
-resources:
-  repositories:
-  - repository: templates
-    type: git
-    name: CIB-Digital Infrastructure/pipeline-templates
-
 variables:
-- group: rtcb-common
-- group: rtcb-payments-api-common
-- group: artifactory
 - name: system.debug
   value: false
 - name: project-name 
-  value: Cib.Rtcb.Payments.Api
-- name: chart-name 
-  value: rtcb-payments-api
+  value: CleanArchitecture.Api
 - name: solution
   value: '**/*.sln'
 - name: build-configuration
   value: Release
 - name: projects
   value: '**/$(project-name).csproj'   
-- name: drop
-  value: $(Build.ArtifactStagingDirectory)/drop
 - name: agents
   value: enablement-linux-agents-full
-- name: container-registry
-  value: artifacts.bcp.absa.co.za
-- name: container-connection
-  value: artifactory
 - name: dotnet-version
   value: 5.0.x
-- name: chart-version
-  value: $(GitVersion.SemVer)-$(Build.BuildId)
-- name: app-version
-  value: $(GitVersion.SemVer)-$(Build.BuildId)
 - name: tag-version
-  value: '0.5.0'
+  value: '1.0.0'
 - name: revision
   value: $[counter(variables['tag-version'], 0)]
 - name: package-version
   value: $(GitVersion.SemVer).$(revision)
 - name: build-version
   value: $(GitVersion.SemVer)-$(revision)
-- name: nuget-config-path
-  value: $(Build.SourcesDirectory)/devops/config/NuGet.config
   
 stages:
 - stage: build
@@ -71,11 +44,13 @@ stages:
     workspace:
       clean: all
       
-    steps:            
-    - task: UseDotNet@2
+    steps:       
+    
+   - task: gitversion/setup@0
+      displayName: Install GitVersion
       inputs:
-        packageType: 'sdk'
-        version: '2.1.x'
+        versionSpec: '5.x'
+        preferLatestVersion: true
 
     - task: GitVersion@5
       displayName: 'Version assemblies'
@@ -92,11 +67,6 @@ stages:
 
     - bash: echo "##vso[build.updatebuildnumber]$(build-version)"
       displayName: 'Set build number'  
-        
-    - task: NuGetAuthenticate@1
-      inputs:
-        nuGetServiceConnections: 'artifactory-kulipa-svc'
-        forceReinstallCredentialProvider: true
 
     - task: DotNetCoreCLI@2
       inputs:
@@ -106,7 +76,6 @@ stages:
         nugetConfigPath: '$(Build.SourcesDirectory)/devops/config/NuGet.config'
         noCache: true
         verbosityRestore: 'minimal'
-        externalFeedCredentials: 'artifactory-kulipa-svc'
 
     - task: DotNetCoreCLI@2
       displayName: 'Dotnet build solution'
@@ -115,19 +84,11 @@ stages:
         arguments: '--verbosity minimal --configuration $(build-configuration) -p:Version=$(package-version) --no-restore'
 
     - task: DotNetCoreCLI@2
-      displayName: 'Dotnet integration tests'
-      inputs:
-        command: test
-        projects: |
-          **/Cib.Rtcb.Payments.IntegrationTests.csproj
-        arguments: '--configuration $(build-configuration) --no-build /p:CollectCoverage=true "/p:CoverletOutputFormat=\"opencover,json,Cobertura\"" /p:CoverletOutput="$(Build.SourcesDirectory)/coverage/"  /p:MergeWith="$(Build.SourcesDirectory)/coverage/coverage.json"'
-      continueOnError: true
-    - task: DotNetCoreCLI@2
       displayName: 'Dotnet unit tests'
       inputs:
         command: test
         projects: |
-          **/Cib.Rtcb.Payments.UnitTests.csproj
+          **/CleanArchitecture.UnitTests.csproj
         arguments: '--configuration $(build-configuration) --no-build /p:CollectCoverage=true "/p:CoverletOutputFormat=\"opencover,json,Cobertura\"" /p:CoverletOutput="$(Build.SourcesDirectory)/coverage/"  /p:MergeWith="$(Build.SourcesDirectory)/coverage/coverage.json"'
       continueOnError: false
       
@@ -138,29 +99,7 @@ stages:
         custom: nuget
         arguments: >
           push $(Agent.BuildDirectory)/**.nupkg
-          -s https://artifacts.bcp.absa.co.za/artifactory/api/nuget/kulipa-nuget
-          -k $(artifactory-user):$(artifactory-api-key)
-          
-#    - task: reportgenerator@4
-#      displayName: 'Local install ReportGenerator tool'
-#      inputs:
-#        reports: '$(Build.SourcesDirectory)/coverage/*.cobertura.xml'
-#        targetdir: '$(Build.SourcesDirectory)/coverlet/reports'
-#        reporttypes: 'Cobertura;HtmlInline'
-#            
-#    - task: PublishCodeCoverageResults@1
-#      displayName: 'Publish code coverage report'
-#      inputs:
-#        codeCoverageTool: 'cobertura'
-#        summaryFileLocation: '$(Build.SourcesDirectory)/coverlet/reports/Cobertura.xml'
-
-#    - task: BuildQualityChecks@8
-#      displayName: Code Coverage checks
-#      inputs:
-#        checkCoverage: true
-#        coverageFailOption: 'fixed'
-#        coverageType: 'branches'
-#        coverageThreshold: '75'
+          -s https://www.nuget.org/nuget
     
     - task: DotNetCoreCLI@2
       displayName: 'Dotnet publish artifacts'
@@ -171,190 +110,12 @@ stages:
         arguments: '--verbosity minimal --configuration $(build-configuration) --no-build --output $(drop)'   
 
     - task: DotNetCoreCLI@2
-      displayName: 'Dotnet publish Cib.Rtcb.Payments.Tools.Postgres'
+      displayName: 'Dotnet publish CleanArchitecture.Tools.Postgres'
       condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
       inputs:
         command: publish
         publishWebProjects: false
         projects: |
-          **/Cib.Rtcb.Payments.Tools.Postgres.csproj
+          **/CleanArchitecture.Tools.Postgres.csproj
         arguments: --verbosity minimal --configuration $(build-configuration) --no-build --output $(drop)/database
-        zipAfterPublish: false
-          
-    # build Integration artifacts                           
-    - task: DotNetCoreCLI@2
-      displayName: 'Dotnet publish e2e artifacts'
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-      inputs:
-        command: 'publish'
-        publishWebProjects: false
-        projects: |
-          **/Cib.Rtcb.Payments.FunctionalTests.csproj
-        arguments: '--verbosity minimal --configuration $(build-configuration) --no-build --output $(drop)/tests'
-        zipAfterPublish: false
-        modifyOutputPath: false
-
-    - task: CopyFiles@2
-      displayName: 'Copy deployment to: $(drop)/deployment'
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-      inputs:
-        SourceFolder: $(Build.SourcesDirectory)/devops/charts/$(chart-name)
-        TargetFolder: $(drop)/deployment/charts/$(chart-name)
-
-    - task: CopyFiles@2
-      displayName: 'Copy variablegroups to: $(drop)/deployment'
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-      inputs:
-        SourceFolder: $(Build.SourcesDirectory)/devops/variablegroups
-        TargetFolder: $(drop)/deployment/variablegroups
-
-    - task: CopyFiles@2
-      displayName: 'Copy tests to: $(drop)/deployment'
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-      inputs:
-        SourceFolder: $(Build.SourcesDirectory)/devops/tests
-        TargetFolder: $(drop)/tests
-
-    - task: replacetokens@3
-      displayName: 'Replace tokens in config'
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-      inputs:
-        rootDirectory: $(drop)/deployment/charts/$(chart-name)
-        targetFiles: |
-          **/Chart.yaml
-          
-    - task: CopyFiles@2
-      displayName: 'Copy Dockerfile'
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-      inputs:
-        SourceFolder: $(Build.SourcesDirectory)/devops
-        Contents: dockerfile
-        TargetFolder: $(drop)/deployment/$(chart-name)
-
-    - task: Bash@3
-      displayName: 'Rename content folder ($(project-name)) to chart name ($(chart-name))'
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
-      inputs:
-        targetType: 'inline'
-        script: 'mv $(project-name).zip $(chart-name).zip'
-        workingDirectory: '$(drop)'    
-
-    - task: PublishPipelineArtifact@0
-      displayName: 'Publish artifacts'
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))  
-      inputs:
-        artifactName: drop
-        targetPath: $(drop)
-
-#################################
-# PACKAGING #####################
-#################################
-- ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
-  - stage: package
-    dependsOn: build
-    displayName: package  
-    jobs:                    
-      - template: jobs/publish-chart-container-job-v2.yaml@templates
-        parameters:
-          containerRegistryConnection: artifactory  
-          projectName: $(chart-name)         
-          buildNumber: $(build.BuildNumber)    
-          pool: $(agents)          
-  
-#################################
-# DEPLOYMENT ####################
-#################################
-  # Deployment to environment DEV
-  - stage: dev
-    dependsOn: package
-    jobs:
-      - template: devops/templates/stages/deploy-service-api.yaml
-        parameters:
-          kubernetesConnectionSdc: cib-fx-nonprod-sdc 
-          kubernetesConnection270: cib-fx-nonprod-270
-          containerRegistry: $(container-registry)          
-          projectName: $(chart-name)                      
-          buildNumber: $(build.BuildNumber) 
-          environment: dev
-
-###Integration Tests ignored for now will relook at it later
-# ################################
-# # Integration Tests for DEV ####
-# ################################
-  - stage: dev_e2e_tests
-    dependsOn: dev
-    jobs:      
-      - template: devops/tests/e2e-tests.yaml
-        parameters:
-          jobName: test
-          environment: dev        
-          variableGroupName: rtcb-payments-api-e2e-test-dev
-          pool: $(agents)
-  
-  # Deployment to environment UAT
-  - stage: uat    
-    dependsOn: package
-    jobs:
-      - template: devops/templates/stages/deploy-service-api.yaml
-        parameters:
-          kubernetesConnectionSdc: cib-fx-nonprod-sdc 
-          kubernetesConnection270: cib-fx-nonprod-270 
-          containerRegistry: $(container-registry)          
-          projectName: $(chart-name)                      
-          buildNumber: $(build.BuildNumber) 
-          environment: uat
-
-###Integration Tests ignored for now will relook at it later
-# ################################
-# # Integration Tests for UAT ####
-# ################################
-  - stage: uat_e2e_tests
-    dependsOn: uat
-    jobs:      
-      - template: devops/tests/e2e-tests.yaml
-        parameters:
-          jobName: test
-          environment: uat        
-          variableGroupName: rtcb-payments-api-e2e-test-uat
-          pool: $(agents)  
-
-  # Deployment to environment PPE
-  - stage: ppe    
-    dependsOn: package
-    jobs:
-      - template: devops/templates/stages/deploy-service-api.yaml
-        parameters:
-          kubernetesConnectionSdc: cib-fx-nonprod-sdc 
-          kubernetesConnection270: cib-fx-nonprod-270 
-          containerRegistry: $(container-registry)          
-          projectName: $(chart-name)                      
-          buildNumber: $(build.BuildNumber) 
-          environment: ppe
-
-###Integration Tests ignored for now will relook at it later
-# ################################
-# # Integration Tests for PPE ####
-# ################################
-  - stage: ppe_e2e_tests
-    dependsOn: ppe
-    jobs:      
-      - template: devops/tests/e2e-tests.yaml
-        parameters:
-          jobName: test
-          environment: ppe        
-          variableGroupName: rtcb-payments-api-e2e-test-ppe
-          pool: $(agents)  
-
-# Deployment to environment PROD    
-  - stage: prod
-    dependsOn: ppe_e2e_tests
-    jobs:
-      - template: devops/templates/stages/deploy-service-api.yaml
-        parameters:
-          kubernetesConnectionSdc: cib-fx-prod-sdc 
-          kubernetesConnection270: cib-fx-prod-270 
-          containerRegistry: $(container-registry)          
-          projectName: $(chart-name)                      
-          buildNumber: $(build.BuildNumber) 
-          environment: prod
-          
+        zipAfterPublish: false                         

@@ -32,8 +32,4 @@
     <ProjectReference Include="..\..\src\CleanArchitecture.Infrastructure\CleanArchitecture.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
 </Project>
