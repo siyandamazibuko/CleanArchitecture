@@ -2,7 +2,6 @@
 using CleanArchitecture.Messages.Queries.Users;
 using CleanArchitecture.Messages.Responses.Users;
 using System.Threading.Tasks;
-using Threshold.Cqrs.Utils;
 using CleanArchitecture.Messages.Commands.Users;
 using System;
 

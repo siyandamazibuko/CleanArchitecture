@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Text.Json.Serialization;
-using Cib.Markets.Core.AspNetCore.Filters;
-using Cib.Markets.Core.AspNetCore.Swagger;
-using Cib.Markets.Core.AspNetCore.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -21,7 +17,6 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using CleanArchitecture.Api.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using System.Net.Mime;
 
@@ -78,7 +73,6 @@ namespace CleanArchitecture.Api.Extensions
 
         public static IServiceCollection AddCustomApiFeatures(this IServiceCollection services)
             => services
-                .AddValidationErrorLogging()
                 .AddVersionedApiExplorer(options =>
                 {
                     options.GroupNameFormat = "'v'VVV";
@@ -89,32 +83,11 @@ namespace CleanArchitecture.Api.Extensions
                     options.ReportApiVersions = true;
                     options.AssumeDefaultVersionWhenUnspecified = true;
                     options.DefaultApiVersion = new ApiVersion(1, 0);
-                    options.ApiVersionReader = new UrlSegmentApiVersionReader();
                 })
                 .AddRouting(options =>
                 {
                     options.LowercaseUrls = true;
                 });
-
-        public static IServiceCollection AddCustomSwagger(this IServiceCollection services, IWebHostEnvironment environment,
-            IConfiguration configuration)
-        {
-            services
-                .AddCustomSwaggerGen(options =>
-                {
-                    configuration
-                        .Bind(ApiConfiguration.Swagger, options);
-                });
-
-            // services
-            //     .AddCustomSwaggerGen(environment, options =>
-            //     {
-            //         configuration
-            //             .Bind(ApiConfiguration.Swagger, options);
-            //     });
-
-            return services;
-        }
 
         public static IServiceCollection AddCustomConfiguration(this IServiceCollection services)
         {
@@ -135,15 +108,6 @@ namespace CleanArchitecture.Api.Extensions
                         };
                     };
                 });
-
-            return services;
-        }
-
-        public static IServiceCollection AddCustomHealthChecks(this IServiceCollection services)
-        {
-            services.AddHealthChecks().AddCheck<SQSConsumerHealthCheck>("SQSConsumerHealthCheck", HealthStatus.Unhealthy);
-
-            // NOTE: More health checks can be added here
 
             return services;
         }
@@ -203,7 +167,6 @@ namespace CleanArchitecture.Api.Extensions
                 ctx.Response.ContentType = MediaTypeNames.Application.Json;
                 await ctx.Response.WriteAsync(result);
             };
-            app.UseHealthChecks("/hc", options);
 
             app.UseSwaggerUI(options =>
             {

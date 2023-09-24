@@ -9,10 +9,8 @@
     <None Include="$(OutputPath)\netstandard2.0\*.dll" Pack="true" PackagePath="\lib\netstandard2.0" />
     <None Include="$(OutputPath)\netstandard2.1\*.dll" Pack="true" PackagePath="\lib\netstandard2.1" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="MediatR" Version="9.0.0" />
-    <PackageReference Include="Threshold.Cqrs" Version="5.1.1" />
   </ItemGroup>
 
   <ItemGroup>

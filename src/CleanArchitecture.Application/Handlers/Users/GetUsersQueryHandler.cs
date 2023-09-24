@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +25,7 @@ namespace CleanArchitecture.Application.Handlers.Users
         public async Task<UsersResponse> Handle(GetUsersQuery request, CancellationToken cancellationToken)
         {
             var userEntities = await _usersRepository.GetUsers() ?? new List<Domain.Entities.User>();
-            var users = _mapper.Map<IList<UserInformation>>(userEntities);
+            var users = _mapper.Map<IList<User>>(userEntities);
 
             return new UsersResponse
             {
