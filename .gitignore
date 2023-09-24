@@ -1,4 +1,4 @@
-﻿# Visual Studio 2015/2017 cache/options directory
+# Visual Studio 2015/2017 cache/options directory
 .vs/
 
 # Jetbrains files
@@ -106,16 +106,4 @@ node_modules/
 *.ldf
 *.mdb
 
-/Source/Cib.Services.InternationalPayments.Messages/Properties/PublishProfiles/FolderProfile.pubxml
-/Source/Cib.Services.InternationalPayments.CommandHost/Configuration/commandhost.settings.uat.json
-/Source/Cib.Services.InternationalPayments.QueryHost/Configuration/queryhost.settings.uat.json
-/Source/Cib.Services.InternationalPayments.CommandHost/Configuration/commandhost.settings.development.json
-/Source/Cib.Services.InternationalPayments.Integration/Properties/PublishProfiles/FolderProfile.pubxml
-/Source/Cib.Services.InternationalPayments.Integration.Contract/Properties/PublishProfiles/FolderProfile.pubxml
-/Source/Infrastructure/Cib.Services.InternationalPayments.QueryHost/Configuration/cqrs.settings.development.json
-/Source/Infrastructure/Cib.Services.InternationalPayments.CommandHost/Configuration/cqrs.settings.development.json
-/Source/Infrastructure/Cib.Services.InternationalPayments.SyncTriEventHost/Configuration/cqrs.settings.development.json
-/Tools/Cib.Services.InternationalPayments.Tools.Postgres/Configuration/appsettings.*.json
-/Source/Infrastructure/Cib.Services.InternationalPayments.CommandHost/Configuration/commandhost.settings.local.json
-/Tools/Cib.Services.InternationalPayments.Tools.Web/Configuration/cqrs.local.settings.json
 /.vscode/settings.json
