@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FeatureManagement;
-using Hangfire;
 using Serilog;
 using CleanArchitecture.Api.Filters;
 
@@ -53,9 +52,6 @@ namespace CleanArchitecture.Api
                 .UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
-
-                    endpoints.MapHangfireDashboard();
-
                     endpoints.ConfigureHealthChecks();
                 });
         }
